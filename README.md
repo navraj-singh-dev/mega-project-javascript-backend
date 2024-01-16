@@ -12,3 +12,10 @@
   - please click on the link to see what this backend project accomplish.
 - this backend is inspired from most popular app called "YouTube".
 - many multiple pages, buttons, history, liked videos and many many more, included in this backend.
+
+# About Documentation of learnings and accomplishments from this complete project
+
+- please open the folder called "learnings from this project".
+- it contains the markdown files which explain all the learnings i got and accomplishments i achieved throughout this project at a certain instance during this project.
+- all the documentation is beautifully formatted for extra ease. 
+- this way other people will also learn and my documentation will surely save other developers time.
