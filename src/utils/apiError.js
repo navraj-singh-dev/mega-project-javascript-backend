@@ -1,13 +1,13 @@
 class ApiError extends Error {
   constructor(
     statusCode,
-    message = "Something Went Wrong",
+    userMessage = "An error occurred",
     errors = [],
     stack = ""
   ) {
-    super(message); // calls the constructor function of NodeJS Error class.
+    super(userMessage || "An error occurred"); // calls the constructor function of NodeJS Error class.
     this.statusCode = statusCode;
-    this.message = message;
+    this.userMessage = userMessage; // Use a different name here
     this.errors = errors;
     this.success = false;
     this.data = null;
