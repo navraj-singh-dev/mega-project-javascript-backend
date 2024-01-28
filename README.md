@@ -12,7 +12,10 @@
   - Please click on the link to see what this backend project accomplish.
 - This backend is inspired from most popular app called "YouTube".
 - Many Schemas, Models, Controllers, Custom Error & Response Classes for standardization,
-  API testing using postman, Industry Standard practices followed only, Best practices only, etc. 
+  API testing using postman, JWT Authentication, Bcrypt Password Hashing, Custom Made and Express-Validator Package For Data & Schema Validation,
+  Access Token & Refresh Tokens, MongoDB Aggregation Pipelines & Sub Pipelines, File Upload Using Multer Package & Cloudinary, Mongoose Hooks,
+  Detailed and well written Documentation for each commit i made and each learning and accomplishments i got while making this project, 
+  Industry Standard practices followed only, Best practices only, Build in Public, Learn In Public, Open Source, Etc. 
   included in this backend project.
 
 # About documentation of each commit on GitHub &  learnings and accomplishments from this complete project
