@@ -46,8 +46,8 @@ router
   .post(
     [
       body("identifier")
-        .isEmpty()
-        .withMessage("Username is required")
+        .notEmpty()
+        .withMessage("Username or email is required")
         .trim()
         .toLowerCase(),
       body("password")

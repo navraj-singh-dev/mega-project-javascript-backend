@@ -112,7 +112,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   // validate user input
   const errors = await validationResult(req);
 
-  if (!error.isEmpty()) {
+  if (!errors.isEmpty()) {
     const validationError = new ApiError(
       400,
       "Validation Error",
@@ -162,7 +162,7 @@ export const loginUser = asyncHandler(async (req, res) => {
       accessToken,
       refreshToken,
       user: {
-        ...updatedUser,
+        ...updatedUser._doc,
         password: undefined,
       },
     };
@@ -199,7 +199,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
     // delete refreshToken
     const user = await User.findByIdAndUpdate(
       { _id },
-      { $set: { refreshToken: undefined } },
+      { $set: { refreshToken: "" } },
       { new: true }
     ).select("-password");
 

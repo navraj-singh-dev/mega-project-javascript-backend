@@ -1,14 +1,14 @@
 import jwt from "jsonwebtoken";
-import { User } from "../models/user.model";
-import { asyncHandler } from "../utils/asyncHandler";
-import { ApiError } from "../utils/apiError";
+import { User } from "../models/user.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/apiError.js";
 
 export const verifyJWT = asyncHandler(async (req, res, next) => {
   try {
     // take the jwt token from headers or cookies
     const token =
       req.cookies?.AccessToken ||
-      req.headers("Authorization")?.replace("Bearer ", "");
+      req.headers.authorization?.replace("Bearer ", "");
 
     if (!token) {
       const noTokenError = new ApiError(401, "No token provided");
