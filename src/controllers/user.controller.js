@@ -180,7 +180,7 @@ export const loginUser = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    res
+    return res
       .status(successResponse.statusCode)
       .cookie("AccessToken", accessToken, cookieSettings)
       .cookie("RefreshToken", refreshToken, cookieSettings)
@@ -220,7 +220,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    res
+    return res
       .status(successResponse.statusCode)
       .clearCookie("AccessToken", cookieSettings)
       .clearCookie("RefreshToken", cookieSettings)
@@ -228,7 +228,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
   } catch (error) {
     console.log(error);
     const serverError = new ApiError(500, "Internal server error");
-    res.status(serverError.statusCode).json(serverError);
+    return res.status(serverError.statusCode).json(serverError);
   }
 });
 
@@ -236,7 +236,7 @@ export const regenerateTokens = asyncHandler(async (req, res) => {
   // take the refresh token
   const incomingRefreshToken =
     req.cookies?.RefreshToken ||
-    req.headers.authentication?.replace("Bearer ", "") ||
+    req.headers.authorization?.replace("Bearer ", "") ||
     req.body.RefreshToken;
 
   // validate if token is not empty
@@ -258,7 +258,7 @@ export const regenerateTokens = asyncHandler(async (req, res) => {
 
     if (!sanitizedUser) {
       const tokenMatchError = new ApiError(401, "No user match this token");
-      res.status(tokenMatchError.statusCode).json(tokenMatchError);
+      return res.status(tokenMatchError.statusCode).json(tokenMatchError);
     }
 
     if (!(sanitizedUser.refreshToken === incomingRefreshToken)) {
@@ -266,7 +266,7 @@ export const regenerateTokens = asyncHandler(async (req, res) => {
         401,
         "Token do not match, token might be expired or invalid"
       );
-      res.status(tokenMatchError.statusCode).json(tokenMatchError);
+      return res.status(tokenMatchError.statusCode).json(tokenMatchError);
     }
 
     // generate both tokens
@@ -274,7 +274,7 @@ export const regenerateTokens = asyncHandler(async (req, res) => {
     const refreshToken = await sanitizedUser.generateRefreshToken();
 
     // update refresh token of user in database
-    const updatedUser = await findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { _id: userPayloadObj?._id },
       { $set: { refreshToken } },
       { new: true }
@@ -306,7 +306,7 @@ export const regenerateTokens = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    res
+    return res
       .status(successResponse.statusCode)
       .cookie("AccessToken", accessToken, cookieSettings)
       .cookie("RefreshToken", refreshToken, cookieSettings)

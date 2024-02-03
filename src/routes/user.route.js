@@ -60,6 +60,6 @@ router
 
 // secured routes (require tokens)
 router.route("/logout").post(verifyJWT, logoutUser);
-router.route("regenerate-tokens").post(regenerateTokens);
+router.route("/regenerate-tokens").post(regenerateTokens);
 
 export default router;
