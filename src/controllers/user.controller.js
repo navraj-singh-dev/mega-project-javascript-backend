@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { validationResult } from "express-validator";
+import jwt from "jsonwebtoken";
 
 export const registerUser = asyncHandler(async (req, res) => {
   // validate user's input
@@ -228,5 +229,91 @@ export const logoutUser = asyncHandler(async (req, res) => {
     console.log(error);
     const serverError = new ApiError(500, "Internal server error");
     res.status(serverError.statusCode).json(serverError);
+  }
+});
+
+export const regenerateTokens = asyncHandler(async (req, res) => {
+  // take the refresh token
+  const incomingRefreshToken =
+    req.cookies?.RefreshToken ||
+    req.headers.authentication?.replace("Bearer ", "") ||
+    req.body.RefreshToken;
+
+  // validate if token is not empty
+  if (!incomingRefreshToken) {
+    const noTokenError = new ApiError(401, "No token provided");
+    return res.status(noTokenError.statusCode).json(noTokenError);
+  }
+
+  try {
+    // extract payload
+    const userPayloadObj = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const sanitizedUser = await User.findById(userPayloadObj?._id).select(
+      "-password"
+    );
+
+    if (!sanitizedUser) {
+      const tokenMatchError = new ApiError(401, "No user match this token");
+      res.status(tokenMatchError.statusCode).json(tokenMatchError);
+    }
+
+    if (!(sanitizedUser.refreshToken === incomingRefreshToken)) {
+      const tokenMatchError = new ApiError(
+        401,
+        "Token do not match, token might be expired or invalid"
+      );
+      res.status(tokenMatchError.statusCode).json(tokenMatchError);
+    }
+
+    // generate both tokens
+    const accessToken = await sanitizedUser.generateAccessToken();
+    const refreshToken = await sanitizedUser.generateRefreshToken();
+
+    // update refresh token of user in database
+    const updatedUser = await findOneAndUpdate(
+      { _id: userPayloadObj?._id },
+      { $set: { refreshToken } },
+      { new: true }
+    );
+
+    /* 
+    create object with newly generated
+    access & refresh token and sanitized 
+    updated user for response
+    */
+    const sanitizedUpdatedUser = {
+      accessToken,
+      refreshToken,
+      user: {
+        ...updatedUser._doc,
+        password: undefined,
+      },
+    };
+
+    const successResponse = new ApiResponse(
+      201,
+      "New tokens generated successfully",
+      sanitizedUpdatedUser
+    );
+
+    // make cookie secure
+    const cookieSettings = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    res
+      .status(successResponse.statusCode)
+      .cookie("AccessToken", accessToken, cookieSettings)
+      .cookie("RefreshToken", refreshToken, cookieSettings)
+      .json(successResponse);
+  } catch (error) {
+    console.log(error);
+    const serverError = new ApiError(500, "Internal Server Error");
+    return res.status(serverError.statusCode).json(serverError);
   }
 });
