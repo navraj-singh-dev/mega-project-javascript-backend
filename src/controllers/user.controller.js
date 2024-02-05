@@ -338,7 +338,7 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
 export const changeCurrentPassword = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
 
-  if (errors) {
+  if (!errors.isEmpty()) {
     const validationErrors = new ApiError(
       400,
       "Validation errors",
@@ -365,16 +365,19 @@ export const changeCurrentPassword = asyncHandler(async (req, res) => {
 
     if (!isPasswordCorrect) {
       const wrongPasswordError = new ApiError(400, "Wrong old password");
-      return res.status(wrongPasswordError).json(wrongPasswordError);
+      return res.status(wrongPasswordError.statusCode).json(wrongPasswordError);
     }
 
     user.password = newPassword;
     const updatedUser = await user.save({ validateBeforeSave: false });
-
     const successResponse = new ApiResponse(
       200,
       "User new password updated successfully",
-      updatedUser
+      {
+        ...updatedUser._doc,
+        password: undefined,
+        refreshToken: undefined,
+      }
     );
 
     return res.status(successResponse.statusCode).json(successResponse);
@@ -388,7 +391,7 @@ export const changeCurrentPassword = asyncHandler(async (req, res) => {
 export const changeFullName = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
 
-  if (errors) {
+  if (!errors.isEmpty()) {
     const validationErrors = new ApiError(
       400,
       "Validation errors",
@@ -429,10 +432,10 @@ export const changeAvatar = asyncHandler(async (req, res) => {
   let avatarLocalPath = "";
 
   if (req.file) {
-    avatarLocalPath = req.file.avatar?.path;
+    avatarLocalPath = req.file.path;
   }
 
-  if (!req.file || !req.file.avatar) {
+  if (!req.file || !req.file.fieldname) {
     const fileError = new ApiError(400, "Avatar is Required", [
       { msg: "avatar image is not provided" },
     ]);
@@ -441,7 +444,7 @@ export const changeAvatar = asyncHandler(async (req, res) => {
 
   try {
     let avatarResponse;
-    if (!avatarLocalPath) {
+    if (avatarLocalPath) {
       avatarResponse = await uploadOnCloudinary(avatarLocalPath);
 
       if (!avatarResponse) {
@@ -459,7 +462,7 @@ export const changeAvatar = asyncHandler(async (req, res) => {
     const successResponse = new ApiResponse(
       200,
       "Avatar updated successfully",
-      updatedUser._doc
+      { ...updatedUser._doc, password: undefined, refreshToken: undefined }
     );
 
     return res.status(successResponse.statusCode).json(successResponse);
@@ -474,10 +477,10 @@ export const changeCoverImage = asyncHandler(async (req, res) => {
   let coverImageLocalPath = "";
 
   if (req.file) {
-    coverImageLocalPath = req.file.coverImage?.path;
+    coverImageLocalPath = req.file.path;
   }
 
-  if (!req.file || !req.file.coverImage) {
+  if (!req.file || !req.file.fieldname) {
     const fileError = new ApiError(400, "Cover image is Required", [
       { msg: "cover image is not provided" },
     ]);
@@ -486,7 +489,7 @@ export const changeCoverImage = asyncHandler(async (req, res) => {
 
   try {
     let coverImageResponse;
-    if (!coverImageLocalPath) {
+    if (coverImageLocalPath) {
       coverImageResponse = await uploadOnCloudinary(coverImageLocalPath);
 
       if (!coverImageResponse) {
@@ -497,14 +500,14 @@ export const changeCoverImage = asyncHandler(async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
-      { $set: { avatar: coverImageResponse?.url } },
+      { $set: { coverImage: coverImageResponse?.url } },
       { new: true }
     );
 
     const successResponse = new ApiResponse(
       200,
       "Cover image updated successfully",
-      updatedUser._doc
+      { ...updatedUser._doc, password: undefined, refreshToken: undefined }
     );
 
     return res.status(successResponse.statusCode).json(successResponse);

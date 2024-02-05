@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   changeAvatar,
+  changeCoverImage,
   changeCurrentPassword,
   changeFullName,
   getCurrentUser,
@@ -76,6 +77,7 @@ router
     ],
     changeFullName
   );
+
 router.route("/update-user-password").post(
   [
     verifyJWT,
@@ -96,11 +98,13 @@ router.route("/update-user-password").post(
   ],
   changeCurrentPassword
 );
+
 router
   .route("/update-user-avatar")
   .post([verifyJWT, upload.single("avatar")], changeAvatar);
+
 router
   .route("/update-user-coverImage")
-  .post([verifyJWT, upload.single("avatar")], changeAvatar);
+  .post([verifyJWT, upload.single("coverImage")], changeCoverImage);
 
 export default router;
