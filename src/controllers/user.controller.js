@@ -317,3 +317,200 @@ export const regenerateTokens = asyncHandler(async (req, res) => {
     return res.status(serverError.statusCode).json(serverError);
   }
 });
+
+// controllers for updating user
+
+export const getCurrentUser = asyncHandler(async (req, res) => {
+  try {
+    const successResponse = new ApiResponse(
+      200,
+      "User fetched successfully",
+      req.user || "Req.user not found, No data found for current user."
+    );
+    return res.status(successResponse.statusCode).json(successResponse);
+  } catch (error) {
+    console.log(error);
+    const serverError = new ApiError(500, "Internal Server Error");
+    return res.status(serverError.statusCode).json(serverError);
+  }
+});
+
+export const changeCurrentPassword = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+
+  if (errors) {
+    const validationErrors = new ApiError(
+      400,
+      "Validation errors",
+      errors.array()
+    );
+    return res.status(validationErrors.statusCode).json(validationErrors);
+  }
+
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+
+  if (newPassword !== confirmPassword) {
+    const passwordNotMatchError = new ApiError(
+      400,
+      "New password & confirm password do not match"
+    );
+    return res
+      .status(passwordNotMatchError.statusCode)
+      .json(passwordNotMatchError);
+  }
+
+  try {
+    const user = await User.findById(req.user?._id);
+    const isPasswordCorrect = await user?.isPasswordCorrect(oldPassword);
+
+    if (!isPasswordCorrect) {
+      const wrongPasswordError = new ApiError(400, "Wrong old password");
+      return res.status(wrongPasswordError).json(wrongPasswordError);
+    }
+
+    user.password = newPassword;
+    const updatedUser = await user.save({ validateBeforeSave: false });
+
+    const successResponse = new ApiResponse(
+      200,
+      "User new password updated successfully",
+      updatedUser
+    );
+
+    return res.status(successResponse.statusCode).json(successResponse);
+  } catch (error) {
+    console.log(error);
+    const serverError = new ApiError(500, "Internal Server Error");
+    return res.status(serverError.statusCode).json(serverError);
+  }
+});
+
+export const changeFullName = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+
+  if (errors) {
+    const validationErrors = new ApiError(
+      400,
+      "Validation errors",
+      errors.array()
+    );
+    return res.status(validationErrors.statusCode).json(validationErrors);
+  }
+
+  const { fullName } = req.body;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user?._id,
+      { $set: { fullName } },
+      { new: true }
+    ).select("-password -refreshToken");
+
+    if (!updatedUser) {
+      const noUserFoundError = new ApiError(400, "No user found");
+      return res.status(noUserFoundError.statusCode).json(noUserFoundError);
+    }
+
+    const successResponse = new ApiResponse(
+      200,
+      "Full name updated successfully",
+      updatedUser._doc
+    );
+
+    return res.status(successResponse.statusCode).json(successResponse);
+  } catch (error) {
+    console.log(error);
+    const serverError = new ApiError(500, "Internal Server Error");
+    return res.status(serverError.statusCode).json(serverError);
+  }
+});
+
+export const changeAvatar = asyncHandler(async (req, res) => {
+  let avatarLocalPath = "";
+
+  if (req.file) {
+    avatarLocalPath = req.file.avatar?.path;
+  }
+
+  if (!req.file || !req.file.avatar) {
+    const fileError = new ApiError(400, "Avatar is Required", [
+      { msg: "avatar image is not provided" },
+    ]);
+    return res.status(fileError.statusCode).json(fileError);
+  }
+
+  try {
+    let avatarResponse;
+    if (!avatarLocalPath) {
+      avatarResponse = await uploadOnCloudinary(avatarLocalPath);
+
+      if (!avatarResponse) {
+        const uploadError = new ApiError(400, "Avatar cannot be uploaded");
+        return res.status(uploadError.statusCode).json(uploadError);
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: { avatar: avatarResponse?.url } },
+      { new: true }
+    );
+
+    const successResponse = new ApiResponse(
+      200,
+      "Avatar updated successfully",
+      updatedUser._doc
+    );
+
+    return res.status(successResponse.statusCode).json(successResponse);
+  } catch (error) {
+    console.log(error);
+    const serverError = new ApiError(500, "Internal Server Error");
+    return res.status(serverError.statusCode).json(serverError);
+  }
+});
+
+export const changeCoverImage = asyncHandler(async (req, res) => {
+  let coverImageLocalPath = "";
+
+  if (req.file) {
+    coverImageLocalPath = req.file.coverImage?.path;
+  }
+
+  if (!req.file || !req.file.coverImage) {
+    const fileError = new ApiError(400, "Cover image is Required", [
+      { msg: "cover image is not provided" },
+    ]);
+    return res.status(fileError.statusCode).json(fileError);
+  }
+
+  try {
+    let coverImageResponse;
+    if (!coverImageLocalPath) {
+      coverImageResponse = await uploadOnCloudinary(coverImageLocalPath);
+
+      if (!coverImageResponse) {
+        const uploadError = new ApiError(400, "Cover image cannot be uploaded");
+        return res.status(uploadError.statusCode).json(uploadError);
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: { avatar: coverImageResponse?.url } },
+      { new: true }
+    );
+
+    const successResponse = new ApiResponse(
+      200,
+      "Cover image updated successfully",
+      updatedUser._doc
+    );
+
+    return res.status(successResponse.statusCode).json(successResponse);
+  } catch (error) {
+    console.log(error);
+    const serverError = new ApiError(500, "Internal Server Error");
+    return res.status(serverError.statusCode).json(serverError);
+  }
+});

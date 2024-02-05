@@ -1,5 +1,9 @@
 import { Router } from "express";
 import {
+  changeAvatar,
+  changeCurrentPassword,
+  changeFullName,
+  getCurrentUser,
   loginUser,
   logoutUser,
   regenerateTokens,
@@ -61,5 +65,42 @@ router
 // secured routes (require tokens)
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/regenerate-tokens").post(regenerateTokens);
+router.route("/get-current-user").get(verifyJWT, getCurrentUser);
+
+router
+  .route("/update-user-fullname")
+  .post(
+    [
+      verifyJWT,
+      body("fullName").notEmpty().withMessage("Full name is required"),
+    ],
+    changeFullName
+  );
+router.route("/update-user-password").post(
+  [
+    verifyJWT,
+    body("oldPassword")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters")
+      .trim(),
+    body("newPassword")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters")
+      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$/)
+      .withMessage(
+        "Password must contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character"
+      ),
+    body("confirmPassword")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters"),
+  ],
+  changeCurrentPassword
+);
+router
+  .route("/update-user-avatar")
+  .post([verifyJWT, upload.single("avatar")], changeAvatar);
+router
+  .route("/update-user-coverImage")
+  .post([verifyJWT, upload.single("avatar")], changeAvatar);
 
 export default router;
