@@ -517,3 +517,82 @@ export const changeCoverImage = asyncHandler(async (req, res) => {
     return res.status(serverError.statusCode).json(serverError);
   }
 });
+
+// aggregation
+export const getChannelProfileDetails = asyncHandler(async (req, res) => {
+  // find the given channel
+  const { channelName } = req.params;
+
+  if (!channelName.trim()) {
+    const noChannelNameError = ApiError(400, "Please provide channel name");
+    return res.status(noChannelNameError.statusCode).json(noChannelNameError);
+  }
+
+  // get profile details (subscribers, subscribed-to, etc.)
+  const channelDetails = User.aggregate([
+    // look for the channel in database
+    {
+      $match: {
+        username: channelName?.toLowerCase().trim(),
+      },
+    },
+    // get the number of subscribers
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "channel",
+        as: "channelSubscribers",
+      },
+    },
+    // get personal subscriptions
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "channelPersonalSubscriptions",
+      },
+    },
+    // calculate personal subscriptions & subscribers
+    {
+      $addFields: {
+        subscribers: {
+          $size: "$channelSubscribers",
+        },
+        subscriberdTo: {
+          $size: "$channelPersonalSubscriptions",
+        },
+        isActiveUserSubscribed: {
+          $cond: {
+            if: { $in: [req.user?._id, "$channelSubscribers.subscriber"] },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    // only give required & useful info
+    {
+      $project: {
+        username: 1,
+        fullName: 1,
+        email: 1,
+        avatar: 1,
+        coverImage: 1,
+        subscribers: 1,
+        subscriberdTo: 1,
+      },
+    },
+  ]);
+
+  console.log(channelDetails);
+
+  const successResponse = ApiResponse(
+    200,
+    "Channel & its details obtained successfully",
+    channelDetails[0]
+  );
+
+  return res.status(successResponse.statusCode).json(successResponse);
+});
