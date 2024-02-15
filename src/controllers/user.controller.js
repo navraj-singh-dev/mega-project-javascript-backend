@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 export const registerUser = asyncHandler(async (req, res) => {
   // validate user's input
@@ -595,4 +596,81 @@ export const getChannelProfileDetails = asyncHandler(async (req, res) => {
   );
 
   return res.status(successResponse.statusCode).json(successResponse);
+});
+
+export const getWatchHistory = asyncHandler(async (req, res) => {
+  // make sure user is logged-in
+  if (!req.user) {
+    const notLoggedIn = new ApiError(400, "User is not logged-In");
+    return res.status(notLoggedIn.statusCode).json(notLoggedIn);
+  }
+
+  try {
+    // get user history using aggregation
+    const history = await User.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(req.user?._id),
+        },
+      },
+      {
+        $lookup: {
+          from: "videos",
+          localField: "watchHistory",
+          foreignField: "_id",
+          as: "watchedVideosDocs",
+          pipeline: [
+            {
+              $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "ownerDoc",
+                pipeline: [
+                  {
+                    $project: {
+                      username: 1,
+                      fullName: 1,
+                      avatar: 1,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $addFields: {
+                ownerDoc: {
+                  $first: "$ownerDoc",
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          watchedVideosDocs: {
+            $first: "$watchedVideosDocs",
+          },
+        },
+      },
+    ]);
+
+    // return error response if aggregation gave no data
+    if (!history) {
+      const historyNotFoundError = new ApiError(400, "No History Found");
+      res.status(historyNotFoundError.statusCode).json(historyNotFoundError);
+    }
+
+    const successResponse = new ApiResponse(
+      200,
+      "History fetched succesfully",
+      history[0].watchedVideosDocs
+    );
+    res.status(successResponse.statusCode).json(successResponse);
+  } catch (error) {
+    console.log(error);
+    const serverError = new ApiError(500, "Internal Server Error");
+    return res.status(serverError.statusCode).json(serverError);
+  }
 });

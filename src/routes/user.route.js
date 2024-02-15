@@ -4,7 +4,9 @@ import {
   changeCoverImage,
   changeCurrentPassword,
   changeFullName,
+  getChannelProfileDetails,
   getCurrentUser,
+  getWatchHistory,
   loginUser,
   logoutUser,
   regenerateTokens,
@@ -106,5 +108,10 @@ router
 router
   .route("/update-user-coverImage")
   .post([verifyJWT, upload.single("coverImage")], changeCoverImage);
+
+// aggregation routes
+router.route("/channel/:channelName").get(verifyJWT, getChannelProfileDetails);
+
+router.route("/get-watch-history").post(verifyJWT, getWatchHistory);
 
 export default router;
