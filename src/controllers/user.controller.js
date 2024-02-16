@@ -529,73 +529,79 @@ export const getChannelProfileDetails = asyncHandler(async (req, res) => {
     return res.status(noChannelNameError.statusCode).json(noChannelNameError);
   }
 
-  // get profile details (subscribers, subscribed-to, etc.)
-  const channelDetails = User.aggregate([
-    // look for the channel in database
-    {
-      $match: {
-        username: channelName?.toLowerCase().trim(),
-      },
-    },
-    // get the number of subscribers
-    {
-      $lookup: {
-        from: "subscriptions",
-        localField: "_id",
-        foreignField: "channel",
-        as: "channelSubscribers",
-      },
-    },
-    // get personal subscriptions
-    {
-      $lookup: {
-        from: "subscriptions",
-        localField: "_id",
-        foreignField: "subscriber",
-        as: "channelPersonalSubscriptions",
-      },
-    },
-    // calculate personal subscriptions & subscribers
-    {
-      $addFields: {
-        subscribers: {
-          $size: "$channelSubscribers",
+  try {
+    // get profile details (subscribers, subscribed-to, etc.)
+    const channelDetails = await User.aggregate([
+      // look for the channel in database
+      {
+        $match: {
+          username: channelName?.toLowerCase().trim(),
         },
-        subscriberdTo: {
-          $size: "$channelPersonalSubscriptions",
+      },
+      // get the number of subscribers
+      {
+        $lookup: {
+          from: "subscriptions",
+          localField: "_id",
+          foreignField: "channel",
+          as: "channelSubscribers",
         },
-        isActiveUserSubscribed: {
-          $cond: {
-            if: { $in: [req.user?._id, "$channelSubscribers.subscriber"] },
-            then: true,
-            else: false,
+      },
+      // get personal subscriptions
+      {
+        $lookup: {
+          from: "subscriptions",
+          localField: "_id",
+          foreignField: "subscriber",
+          as: "channelPersonalSubscriptions",
+        },
+      },
+      // calculate personal subscriptions & subscribers
+      {
+        $addFields: {
+          subscribers: {
+            $size: "$channelSubscribers",
+          },
+          subscriberdTo: {
+            $size: "$channelPersonalSubscriptions",
+          },
+          isActiveUserSubscribed: {
+            $cond: {
+              if: { $in: [req.user?._id, "$channelSubscribers.subscriber"] },
+              then: true,
+              else: false,
+            },
           },
         },
       },
-    },
-    // only give required & useful info
-    {
-      $project: {
-        username: 1,
-        fullName: 1,
-        email: 1,
-        avatar: 1,
-        coverImage: 1,
-        subscribers: 1,
-        subscriberdTo: 1,
+      // only give required & useful info
+      {
+        $project: {
+          username: 1,
+          fullName: 1,
+          email: 1,
+          avatar: 1,
+          coverImage: 1,
+          subscribers: 1,
+          subscriberdTo: 1,
+        },
       },
-    },
-  ]);
+    ]);
 
-  console.log(channelDetails);
+    console.log(channelDetails);
 
-  const successResponse = ApiResponse(
-    200,
-    "Channel & its details obtained successfully",
-    channelDetails[0]
-  );
+    const successResponse = ApiResponse(
+      200,
+      "Channel & its details obtained successfully",
+      channelDetails[0]
+    );
 
-  return res.status(successResponse.statusCode).json(successResponse);
+    return res.status(successResponse.statusCode).json(successResponse);
+  } catch (error) {
+    console.log(error);
+    const serverError = new ApiError(500, "Internal Server Error");
+    return res.status(serverError.statusCode).json(serverError);
+  }
 });
 
 export const getWatchHistory = asyncHandler(async (req, res) => {

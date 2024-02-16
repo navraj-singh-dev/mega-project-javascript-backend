@@ -72,7 +72,7 @@ router.route("/get-current-user").get(verifyJWT, getCurrentUser);
 
 router
   .route("/update-user-fullname")
-  .post(
+  .patch(
     [
       verifyJWT,
       body("fullName").notEmpty().withMessage("Full name is required"),
@@ -80,7 +80,7 @@ router
     changeFullName
   );
 
-router.route("/update-user-password").post(
+router.route("/update-user-password").patch(
   [
     verifyJWT,
     body("oldPassword")
@@ -103,11 +103,11 @@ router.route("/update-user-password").post(
 
 router
   .route("/update-user-avatar")
-  .post([verifyJWT, upload.single("avatar")], changeAvatar);
+  .patch([verifyJWT, upload.single("avatar")], changeAvatar);
 
 router
   .route("/update-user-coverImage")
-  .post([verifyJWT, upload.single("coverImage")], changeCoverImage);
+  .patch([verifyJWT, upload.single("coverImage")], changeCoverImage);
 
 // aggregation routes
 router.route("/channel/:channelName").get(verifyJWT, getChannelProfileDetails);
