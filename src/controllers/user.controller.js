@@ -588,6 +588,13 @@ export const getChannelProfileDetails = asyncHandler(async (req, res) => {
       },
     ]);
 
+    if (channelDetails.length === 0) {
+      const noChannelFoundError = ApiError(404, "Channel not found");
+      return res
+        .status(noChannelFoundError.statusCode)
+        .json(noChannelFoundError);
+    }
+
     console.log(channelDetails);
 
     const successResponse = ApiResponse(
