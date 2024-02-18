@@ -521,60 +521,64 @@ export const changeCoverImage = asyncHandler(async (req, res) => {
 
 // aggregation
 export const getChannelProfileDetails = asyncHandler(async (req, res) => {
-  // find the given channel
   const { channelName } = req.params;
 
+  // Validate channel name
   if (!channelName.trim()) {
-    const noChannelNameError = ApiError(400, "Please provide channel name");
-    return res.status(noChannelNameError.statusCode).json(noChannelNameError);
+    const error = new ApiError(400, "Please provide channel name");
+    return res.status(error.statusCode).json(error);
   }
 
   try {
-    // get profile details (subscribers, subscribed-to, etc.)
     const channelDetails = await User.aggregate([
-      // look for the channel in database
-      {
-        $match: {
-          username: channelName?.toLowerCase().trim(),
-        },
-      },
-      // get the number of subscribers
+      // Match the specified channel name
+      { $match: { username: channelName.toLowerCase().trim() } },
+
+      // Lookup channels that are subscribers to the specified channel
       {
         $lookup: {
           from: "subscriptions",
-          localField: "_id",
-          foreignField: "channel",
-          as: "channelSubscribers",
-        },
-      },
-      // get personal subscriptions
-      {
-        $lookup: {
-          from: "subscriptions",
-          localField: "_id",
-          foreignField: "subscriber",
-          as: "channelPersonalSubscriptions",
-        },
-      },
-      // calculate personal subscriptions & subscribers
-      {
-        $addFields: {
-          subscribers: {
-            $size: "$channelSubscribers",
-          },
-          subscriberdTo: {
-            $size: "$channelPersonalSubscriptions",
-          },
-          isActiveUserSubscribed: {
-            $cond: {
-              if: { $in: [req.user?._id, "$channelSubscribers.subscriber"] },
-              then: true,
-              else: false,
+          let: { channelId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$channel", "$$channelId"] } } },
+            {
+              $lookup: {
+                from: "users",
+                localField: "subscriber",
+                foreignField: "_id",
+                as: "subscriberDetails",
+              },
             },
-          },
+            { $unwind: "$subscriberDetails" },
+            { $project: { _id: 0, username: "$subscriberDetails.username" } },
+          ],
+          as: "subscribers",
         },
       },
-      // only give required & useful info
+
+      // Lookup channels that the specified channel is subscribed to
+      {
+        $lookup: {
+          from: "subscriptions",
+          let: { subscriberId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$subscriber", "$$subscriberId"] } } },
+            {
+              $lookup: {
+                from: "users",
+                localField: "channel",
+                foreignField: "_id",
+                as: "channelDetails",
+              },
+            },
+            { $unwind: "$channelDetails" },
+            { $project: { _id: 0, username: "$channelDetails.username" } },
+          ],
+          as: "subscribedTo",
+        },
+      },
+
+      // Project required fields
       {
         $project: {
           username: 1,
@@ -582,32 +586,37 @@ export const getChannelProfileDetails = asyncHandler(async (req, res) => {
           email: 1,
           avatar: 1,
           coverImage: 1,
+          subscribersCount: { $size: "$subscribers" },
+          subscribedToCount: { $size: "$subscribedTo" },
+          isActiveUserSubscribed: {
+            $cond: {
+              if: { $in: [req.user?.username, "$subscribers.username"] },
+              then: true,
+              else: false,
+            },
+          },
           subscribers: 1,
-          subscriberdTo: 1,
+          subscribedTo: 1,
         },
       },
     ]);
 
+    // Check if channel details found
     if (channelDetails.length === 0) {
-      const noChannelFoundError = ApiError(404, "Channel not found");
-      return res
-        .status(noChannelFoundError.statusCode)
-        .json(noChannelFoundError);
+      const error = new ApiError(404, "Channel not found");
+      return res.status(error.statusCode).json(error);
     }
 
-    console.log(channelDetails);
-
-    const successResponse = ApiResponse(
+    const response = new ApiResponse(
       200,
       "Channel & its details obtained successfully",
       channelDetails[0]
     );
-
-    return res.status(successResponse.statusCode).json(successResponse);
+    return res.status(response.statusCode).json(response);
   } catch (error) {
     console.log(error);
-    const serverError = new ApiError(500, "Internal Server Error");
-    return res.status(serverError.statusCode).json(serverError);
+    const err = new ApiError(500, "Internal Server Error");
+    return res.status(err.statusCode).json(err);
   }
 });
 
@@ -658,13 +667,6 @@ export const getWatchHistory = asyncHandler(async (req, res) => {
               },
             },
           ],
-        },
-      },
-      {
-        $addFields: {
-          watchedVideosDocs: {
-            $first: "$watchedVideosDocs",
-          },
         },
       },
     ]);

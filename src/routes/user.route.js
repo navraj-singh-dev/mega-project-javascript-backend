@@ -15,6 +15,10 @@ import {
 import { upload } from "../middlewares/multer.middleware.js";
 import { body } from "express-validator";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import {
+  gen_Random_Subscriptions,
+  gen_user_video_watchHistory,
+} from "../utils/createFakeData.js";
 
 const router = Router();
 
@@ -48,7 +52,6 @@ router.route("/register").post(
   ],
   registerUser
 );
-
 router
   .route("/login")
   .post(
@@ -69,7 +72,6 @@ router
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/regenerate-tokens").post(regenerateTokens);
 router.route("/get-current-user").get(verifyJWT, getCurrentUser);
-
 router
   .route("/update-user-fullname")
   .patch(
@@ -79,7 +81,6 @@ router
     ],
     changeFullName
   );
-
 router.route("/update-user-password").patch(
   [
     verifyJWT,
@@ -100,18 +101,20 @@ router.route("/update-user-password").patch(
   ],
   changeCurrentPassword
 );
-
 router
   .route("/update-user-avatar")
   .patch([verifyJWT, upload.single("avatar")], changeAvatar);
-
 router
   .route("/update-user-coverImage")
   .patch([verifyJWT, upload.single("coverImage")], changeCoverImage);
 
 // aggregation routes
 router.route("/channel/:channelName").get(verifyJWT, getChannelProfileDetails);
+router.route("/get-watch-history").get(verifyJWT, getWatchHistory);
 
-router.route("/get-watch-history").post(verifyJWT, getWatchHistory);
-
+// testing purpose routes to create fake data
+router
+  .route("/gen-users-videos-watchHistory")
+  .post(gen_user_video_watchHistory);
+router.route("/gen-random-subscriptions").post(gen_Random_Subscriptions);
 export default router;
