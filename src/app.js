@@ -19,10 +19,12 @@ app.use(express.static("public"));
 // router's import
 import userRouter from "./routes/user.route.js";
 import videoRouter from "./routes/video.route.js";
+import playlistRouter from "./routes/playlist.route.js";
 
 // endpoint
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/videos", videoRouter);
+app.use("/api/v1/playlist", playlistRouter);
 
 //exports
 export { app };

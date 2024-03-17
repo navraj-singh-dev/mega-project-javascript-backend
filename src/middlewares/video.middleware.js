@@ -1,22 +1,15 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { Video } from "../models/video.model.js";
+import { isValidObjectId } from "mongoose";
 
 export const fetchVideoById = asyncHandler(async (req, res, next) => {
   // take video id
   const { videoId } = req.params;
 
   // validate video id
-  if (!videoId) {
-    const videoIdError = new ApiError(400, "Video Id is required");
-    return res.status(videoIdError.statusCode).json(videoIdError);
-  }
-
-  if (videoId.length < 24 || videoId.length > 24) {
-    const videoIdError = new ApiError(
-      400,
-      "Video Id length must be 24 character only"
-    );
+  if (!videoId || !isValidObjectId(videoId)) {
+    const videoIdError = new ApiError(400, "Correct Video Id is required");
     return res.status(videoIdError.statusCode).json(videoIdError);
   }
 
