@@ -20,7 +20,7 @@ router
   .route("/")
   .post(
     [
-      body("name").notEmpty().withMess0age("name is required"),
+      body("name").notEmpty().withMessage("name is required"),
       body("description").notEmpty().withMessage("description is required"),
     ],
     createPlaylist
