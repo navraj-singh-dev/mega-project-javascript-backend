@@ -10,9 +10,11 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 export const getAllVideos = asyncHandler(async (req, res) => {
   try {
     // extract details from query
-    const { userId, query, sortBy, sortType, limit = 10, page = 1 } = req.query;
+    const userId = req.user._id;
+    const { query, sortBy, sortType, limit = 10, page = 1 } = req.query;
 
     // validate userId
+    // console.log("userID: ", userId);
     if (!userId || !isValidObjectId(userId)) {
       const userIdError = new ApiError(400, "Correct userId is required");
       return res.status(userIdError.statusCode).json(userIdError);

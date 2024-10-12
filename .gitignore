@@ -1,3 +1,6 @@
+# public/temp folder files
+public/temp/*
+
 # Logs
 logs
 *.log
