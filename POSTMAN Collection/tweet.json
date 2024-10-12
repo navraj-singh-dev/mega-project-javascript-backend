@@ -1,0 +1,111 @@
+{
+  "info": {
+    "name": "VideoTube API - Tweet Routes",
+    "description": "Collection for VideoTube Tweet API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Tweet",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"content\": \"Your tweet content here\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/tweets",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "tweets"]
+        }
+      }
+    },
+    {
+      "name": "Get User Tweets",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/tweets/user/:userId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "tweets", "user", ":userId"],
+          "variable": [
+            {
+              "key": "userId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Tweet",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"content\": \"Updated tweet content\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/tweets/:tweetId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "tweets", ":tweetId"],
+          "variable": [
+            {
+              "key": "tweetId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Tweet",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/tweets/:tweetId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "tweets", ":tweetId"],
+          "variable": [
+            {
+              "key": "tweetId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "info": {
+    "name": "VideoTube API - Comment Routes",
+    "description": "Collection for VideoTube Comment API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Video Comments",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/comments/:videoId?page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "comments", ":videoId"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ],
+          "variable": [
+            {
+              "key": "videoId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Add Comment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"content\": \"Your comment here\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/comments/:videoId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "comments", ":videoId"],
+          "variable": [
+            {
+              "key": "videoId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Comment",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"content\": \"Updated comment content\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/comments/c/:commentId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "comments", "c", ":commentId"],
+          "variable": [
+            {
+              "key": "commentId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Comment",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/comments/c/:commentId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "comments", "c", ":commentId"],
+          "variable": [
+            {
+              "key": "commentId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

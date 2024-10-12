@@ -1,0 +1,180 @@
+{
+  "info": {
+    "name": "VideoTube API - Video Routes",
+    "description": "Collection for VideoTube Video API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Videos",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/videos",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "videos"]
+        }
+      }
+    },
+    {
+      "name": "Publish Video",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "videoFile",
+              "type": "file",
+              "src": []
+            },
+            {
+              "key": "thumbnail",
+              "type": "file",
+              "src": []
+            },
+            {
+              "key": "title",
+              "value": "",
+              "type": "text"
+            },
+            {
+              "key": "description",
+              "value": "",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/videos/publish-video",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "videos", "publish-video"]
+        }
+      }
+    },
+    {
+      "name": "Get Video By ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/videos/:videoId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "videos", ":videoId"],
+          "variable": [
+            {
+              "key": "videoId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Video",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "thumbnail",
+              "type": "file",
+              "src": []
+            },
+            {
+              "key": "title",
+              "value": "",
+              "type": "text"
+            },
+            {
+              "key": "description",
+              "value": "",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/videos/:videoId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "videos", ":videoId"],
+          "variable": [
+            {
+              "key": "videoId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Video",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/videos/:videoId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "videos", ":videoId"],
+          "variable": [
+            {
+              "key": "videoId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Toggle Publish Status",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/videos/toggle/:videoId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "videos", "toggle", ":videoId"],
+          "variable": [
+            {
+              "key": "videoId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

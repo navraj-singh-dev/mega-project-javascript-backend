@@ -1,0 +1,195 @@
+{
+  "info": {
+    "name": "VideoTube API - Playlist Routes",
+    "description": "Collection for VideoTube Playlist API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Playlist",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"\",\n    \"description\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/playlist",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "playlist"]
+        }
+      }
+    },
+    {
+      "name": "Get Playlist By ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/playlist/:playlistId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "playlist", ":playlistId"],
+          "variable": [
+            {
+              "key": "playlistId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Playlist",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"\",\n    \"description\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/playlist/:playlistId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "playlist", ":playlistId"],
+          "variable": [
+            {
+              "key": "playlistId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Playlist",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/playlist/:playlistId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "playlist", ":playlistId"],
+          "variable": [
+            {
+              "key": "playlistId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Add Video to Playlist",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/playlist/add/:videoId/:playlistId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "playlist", "add", ":videoId", ":playlistId"],
+          "variable": [
+            {
+              "key": "videoId",
+              "value": ""
+            },
+            {
+              "key": "playlistId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Remove Video from Playlist",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/playlist/remove/:videoId/:playlistId",
+          "host": ["{{baseUrl}}"],
+          "path": [
+            "api",
+            "v1",
+            "playlist",
+            "remove",
+            ":videoId",
+            ":playlistId"
+          ],
+          "variable": [
+            {
+              "key": "videoId",
+              "value": ""
+            },
+            {
+              "key": "playlistId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get User Playlists",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/playlist/user/:userId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "playlist", "user", ":userId"],
+          "variable": [
+            {
+              "key": "userId",
+              "value": ""
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "info": {
+    "name": "VideoTube API - User Routes",
+    "description": "Collection for VideoTube User API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "username",
+              "value": "",
+              "type": "text"
+            },
+            {
+              "key": "email",
+              "value": "",
+              "type": "text"
+            },
+            {
+              "key": "fullName",
+              "value": "",
+              "type": "text"
+            },
+            {
+              "key": "password",
+              "value": "",
+              "type": "text"
+            },
+            {
+              "key": "avatar",
+              "type": "file",
+              "src": []
+            },
+            {
+              "key": "coverImage",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/users/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "users", "register"]
+        }
+      }
+    },
+    {
+      "name": "Login User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"identifier\": \"\",\n    \"password\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/users/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "users", "login"]
+        }
+      }
+    },
+    {
+      "name": "Logout User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/users/logout",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "users", "logout"]
+        }
+      }
+    },
+    {
+      "name": "Regenerate Tokens",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{refreshToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/users/regenerate-tokens",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "users", "regenerate-tokens"]
+        }
+      }
+    },
+    {
+      "name": "Get Current User",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/users/get-current-user",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "users", "get-current-user"]
+        }
+      }
+    },
+    {
+      "name": "Update User Full Name",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"fullName\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/users/update-user-fullname",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "users", "update-user-fullname"]
+        }
+      }
+    },
+    {
+      "name": "Update User Password",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"oldPassword\": \"\",\n    \"newPassword\": \"\",\n    \"confirmPassword\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/users/update-user-password",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "users", "update-user-password"]
+        }
+      }
+    },
+    {
+      "name": "Update User Avatar",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "avatar",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/users/update-user-avatar",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "users", "update-user-avatar"]
+        }
+      }
+    },
+    {
+      "name": "Update User Cover Image",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "coverImage",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/users/update-user-coverImage",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "users", "update-user-coverImage"]
+        }
+      }
+    },
+    {
+      "name": "Get Channel Profile Details",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/users/channel/:channelName",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "users", "channel", ":channelName"],
+          "variable": [
+            {
+              "key": "channelName",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Watch History",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/users/get-watch-history",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "users", "get-watch-history"]
+        }
+      }
+    }
+  ]
+}
